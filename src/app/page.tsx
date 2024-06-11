@@ -15,7 +15,7 @@ const IndexPage = () => {
     useEffect(() => {
         const loadModel = async () => {
             const detectorConfig: poseDetection.MoveNetModelConfig = {
-                modelType: poseDetection.movenet.modelType.MULTIPOSE_LIGHTNING,
+                modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER,
                 enableTracking: true,
                 trackerType: poseDetection.TrackerType.BoundingBox
             };
