@@ -1,22 +1,27 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import * as tf from '@tensorflow/tfjs';
+import * as poseDetection from '@tensorflow-models/pose-detection';
+import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
-import '@tensorflow/tfjs-backend-wasm';
-import * as movenet from '@tensorflow-models/pose-detection';
 import Stats from 'stats.js';
 
 const IndexPage = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const modelRef = useRef<movenet.PoseDetector>();
+    const modelRef = useRef<poseDetection.PoseDetector>();
     const statsRef = useRef<Stats>();
 
     useEffect(() => {
         const loadModel = async () => {
+            const detectorConfig: poseDetection.MoveNetModelConfig = {
+                modelType: poseDetection.movenet.modelType.MULTIPOSE_LIGHTNING,
+                enableTracking: true,
+                trackerType: poseDetection.TrackerType.BoundingBox
+            };
             await tf.setBackend('webgl');
-            modelRef.current = await movenet.createDetector(movenet.SupportedModels.MoveNet);
+            await tf.ready();
+            modelRef.current = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, detectorConfig);
         };
 
         const startVideo = async () => {
@@ -48,7 +53,7 @@ const IndexPage = () => {
             requestAnimationFrame(detectPose);
         };
 
-        const drawPoses = (poses: movenet.Pose[]) => {
+        const drawPoses = (poses: poseDetection.Pose[]) => {
             const canvas = canvasRef.current;
             if (canvas) {
                 const ctx = canvas.getContext('2d');
