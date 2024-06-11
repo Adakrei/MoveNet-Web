@@ -77,9 +77,11 @@ const IndexPage = () => {
         };
 
         const initStats = () => {
-            statsRef.current = new Stats();
-            statsRef.current.showPanel(0);
-            document.body.appendChild(statsRef.current.dom);
+            if (!statsRef.current) {
+                statsRef.current = new Stats();
+                statsRef.current.showPanel(0);
+                document.body.appendChild(statsRef.current.dom);
+            }
         };
 
         initStats();
