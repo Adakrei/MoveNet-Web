@@ -5,11 +5,13 @@ import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgl';
 import '@tensorflow/tfjs-backend-wasm';
 import * as movenet from '@tensorflow-models/pose-detection';
+import Stats from 'stats.js';
 
 const IndexPage = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const modelRef = useRef<movenet.PoseDetector>();
+    const statsRef = useRef<Stats>();
 
     useEffect(() => {
         const loadModel = async () => {
@@ -20,7 +22,9 @@ const IndexPage = () => {
         const startVideo = async () => {
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { width: 640, height: 480 },
+                    });
                     if (videoRef.current) {
                         videoRef.current.srcObject = stream;
                         videoRef.current.onloadedmetadata = () => {
@@ -28,16 +32,18 @@ const IndexPage = () => {
                             detectPose();
                         };
                     }
-                } catch (error) {
-                    console.error('Error: ', error);
+                } catch (err) {
+                    console.error('Error accessing user media', err);
                 }
             }
         };
 
         const detectPose = async () => {
-            if (modelRef.current && videoRef.current && videoRef.current.readyState === 4) {
+            if (modelRef.current && videoRef.current) {
+                statsRef.current?.begin();
                 const poses = await modelRef.current.estimatePoses(videoRef.current);
                 drawPoses(poses);
+                statsRef.current?.end();
             }
             requestAnimationFrame(detectPose);
         };
@@ -65,6 +71,13 @@ const IndexPage = () => {
             }
         };
 
+        const initStats = () => {
+            statsRef.current = new Stats();
+            statsRef.current.showPanel(0);
+            document.body.appendChild(statsRef.current.dom);
+        };
+
+        initStats();
         loadModel();
         startVideo();
     }, []);
