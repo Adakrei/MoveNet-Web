@@ -49,13 +49,15 @@ export class RendererWebGL {
 
         // Draw keypoints on WebGL
         poses.forEach((pose) => {
-            const points = pose.keypoints
-                .filter(keypoint => keypoint.score !== undefined && keypoint.score > 0.25)
-                .map(keypoint => [keypoint.x / this.canvas.width * 2 - 1, keypoint.y / this.canvas.height * -2 + 1])
-                .flat();
+            const filteredKeypoints = pose.keypoints.filter(keypoint => keypoint.score !== undefined && keypoint.score > 0.25);
+            const points = filteredKeypoints.map(keypoint => [
+                keypoint.x / this.canvas.width * 2 - 1,
+                keypoint.y / this.canvas.height * -2 + 1
+            ]).flat();
 
             if (points.length > 0) {
                 this.drawPoints(points);
+                this.drawSkeleton(filteredKeypoints);
             }
         });
     }
@@ -146,6 +148,47 @@ export class RendererWebGL {
         gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(positionLocation);
         gl.drawArrays(gl.POINTS, 0, points.length / 2);
+    }
+
+    private drawSkeleton(keypoints: poseDetection.Keypoint[]): void {
+        if (!this.keypointProgram) {
+            return;
+        }
+        const adjacentPairs = poseDetection.util.getAdjacentPairs(poseDetection.SupportedModels.MoveNet);
+
+        for (const [i, j] of adjacentPairs) {
+            const keypoint1 = keypoints[i];
+            const keypoint2 = keypoints[j];
+            if (typeof keypoint1?.score === 'undefined' || typeof keypoint2?.score === 'undefined') {
+                continue;
+            }
+
+            if (keypoint1.score >= 0.25 && keypoint2.score >= 0.25) {
+                const positions = [
+                    keypoint1.x / this.canvas.width * 2 - 1,
+                    keypoint1.y / this.canvas.height * -2 + 1,
+                    keypoint2.x / this.canvas.width * 2 - 1,
+                    keypoint2.y / this.canvas.height * -2 + 1
+                ];
+
+                this.drawLine(positions);
+            }
+        }
+    }
+
+    private drawLine(positions: number[]): void {
+        if (!this.keypointProgram) {
+            return;
+        }
+        const gl = this.gl;
+        gl.useProgram(this.keypointProgram);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+        const positionLocation = gl.getAttribLocation(this.keypointProgram, 'a_position');
+        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(positionLocation);
+        gl.drawArrays(gl.LINES, 0, positions.length / 2);
     }
 }
 
