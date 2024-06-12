@@ -50,7 +50,7 @@ export class RendererWebGL {
         // Draw keypoints on WebGL
         poses.forEach((pose) => {
             const points = pose.keypoints
-                .filter(keypoint => keypoint.score !== undefined && keypoint.score > 0.5)
+                .filter(keypoint => keypoint.score !== undefined && keypoint.score > 0.25)
                 .map(keypoint => [keypoint.x / this.canvas.width * 2 - 1, keypoint.y / this.canvas.height * -2 + 1])
                 .flat();
 
