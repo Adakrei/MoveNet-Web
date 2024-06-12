@@ -18,8 +18,8 @@ const WebGLVideoRenderer: React.FC<{ model: PoseDetector }> = ({ model }) => {
                     });
                     if (videoRef.current) {
                         videoRef.current.srcObject = stream;
-                        videoRef.current.onloadedmetadata = async () => {
-                            await videoRef.current?.play();
+                        videoRef.current.onloadedmetadata = () => {
+                            videoRef.current?.play();
                             setIsVideoLoaded(true);
                         };
                     }
@@ -33,24 +33,27 @@ const WebGLVideoRenderer: React.FC<{ model: PoseDetector }> = ({ model }) => {
             if (canvasRef.current) {
                 const { context } = getDevice<WebGLRenderingContext>(canvasRef.current);
                 rendererRef.current = new RendererWebGL(canvasRef.current, context);
-                console.log('Renderer initialized');
             }
         };
 
         const detectPose = async () => {
             if (rendererRef.current && model && videoRef.current) {
-                const poses = await model.estimatePoses(videoRef.current);
-                await rendererRef.current.draw(videoRef.current, poses);
+                // Check texture size of video
+                const videoWidth = videoRef.current.videoWidth;
+                const videoHeight = videoRef.current.videoHeight;
+                if (videoWidth > 0 && videoHeight > 0) {
+                    const poses = await model.estimatePoses(videoRef.current);
+                    rendererRef.current.draw(videoRef.current, poses);
+                }
             }
             requestAnimationFrame(detectPose);
         };
 
+        initializeRenderer();
+        startVideo();
         if (isVideoLoaded) {
             detectPose();
         }
-
-        initializeRenderer();
-        startVideo();
     }, [model, isVideoLoaded]);
 
     return (

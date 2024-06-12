@@ -4,7 +4,7 @@ import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 
 const useMoveNet = () => {
-    const [detector, setDetector] = useState<poseDetection.PoseDetector | null>(null);
+    const [detector, setDetector] = useState<poseDetection.PoseDetector>();
 
     useEffect(() => {
         const loadModel = async () => {
