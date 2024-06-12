@@ -53,14 +53,23 @@ const IndexPage = () => {
             requestAnimationFrame(detectPose);
         };
 
+        const flipCanvas = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+            ctx.save();
+            ctx.translate(width, 0);
+            ctx.scale(-1, 1);
+        };
+
         const drawPoses = (poses: poseDetection.Pose[]) => {
             const canvas = canvasRef.current;
             if (canvas) {
                 const ctx = canvas.getContext('2d');
                 if (ctx && videoRef.current) {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    // Flip the canvas horizontally
+                    flipCanvas(ctx, canvas.width, canvas.height);
                     ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
+                    // Draw the keypoints
                     poses.forEach((pose) => {
                         pose.keypoints.forEach((keypoint) => {
                             if (keypoint.score !== undefined && keypoint.score > 0.5) {
@@ -72,6 +81,8 @@ const IndexPage = () => {
                             }
                         });
                     });
+                    // Reverse the flip for subsequent drawing
+                    ctx.restore();
                 }
             }
         };
