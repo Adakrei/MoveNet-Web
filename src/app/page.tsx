@@ -14,6 +14,10 @@ const IndexPage = () => {
             statsRef.current = new Stats();
             statsRef.current.showPanel(0);
             document.body.appendChild(statsRef.current.dom);
+            statsRef.current.dom.style.position = 'absolute';
+            statsRef.current.dom.style.top = '0px';
+            statsRef.current.dom.style.right = '0px';
+            statsRef.current.dom.style.left = 'auto';
         }
 
         const updateStats = () => {
