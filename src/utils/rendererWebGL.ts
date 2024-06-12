@@ -12,6 +12,13 @@ export class RendererWebGL {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     }
 
+
+    flipCanvas = (ctx: CanvasRenderingContext2D, width: number) => {
+        ctx.save();
+        ctx.translate(width, 0);
+        ctx.scale(-1, 1);
+    };
+
     draw(video: HTMLVideoElement, poses: poseDetection.Pose[]): Promise<void> {
         console.log('Drawing frame');
         const gl = this.gl;
@@ -22,8 +29,8 @@ export class RendererWebGL {
         console.log(video);
         if (ctx && video) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            this.flipCanvas(ctx, canvas.width);
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
             console.log('Drawing poses on canvas');
             poses.forEach((pose) => {
                 pose.keypoints.forEach((keypoint) => {
@@ -36,6 +43,7 @@ export class RendererWebGL {
                     }
                 });
             });
+            ctx.restore();
         }
 
         return Promise.resolve();
