@@ -26,7 +26,6 @@ export class RendererWebGL {
 
         const canvas = this.canvas;
         const ctx = canvas.getContext('2d');
-        console.log(video);
         if (ctx && video) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             this.flipCanvas(ctx, canvas.width);
