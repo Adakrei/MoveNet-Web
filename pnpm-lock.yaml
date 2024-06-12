@@ -14,6 +14,9 @@ importers:
       '@tensorflow/tfjs-backend-webgl':
         specifier: ^4.20.0
         version: 4.20.0(@tensorflow/tfjs-core@4.20.0)
+      '@tensorflow/tfjs-backend-webgpu':
+        specifier: ^4.20.0
+        version: 4.20.0(@tensorflow/tfjs-core@4.20.0)
       '@tensorflow/tfjs-converter':
         specifier: ^4.20.0
         version: 4.20.0(@tensorflow/tfjs-core@4.20.0)
