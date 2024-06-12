@@ -18,7 +18,7 @@ const WebGLVideoRenderer: React.FC<{ model: PoseDetector }> = ({ model }) => {
                     });
                     if (videoRef.current) {
                         videoRef.current.srcObject = stream;
-                        videoRef.current.onloadedmetadata = async() => {
+                        videoRef.current.onloadedmetadata = async () => {
                             await videoRef.current?.play();
                             setIsVideoLoaded(true);
                         };
