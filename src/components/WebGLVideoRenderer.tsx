@@ -14,7 +14,7 @@ const WebGLVideoRenderer: React.FC<{ model: PoseDetector }> = ({ model }) => {
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({
-                        video: { width: 640, height: 480 },
+                        video: { width: 320, height: 240 },
                     });
                     if (videoRef.current) {
                         videoRef.current.srcObject = stream;
@@ -59,7 +59,7 @@ const WebGLVideoRenderer: React.FC<{ model: PoseDetector }> = ({ model }) => {
     return (
         <div>
             <video ref={videoRef} style={{ display: 'none' }} />
-            <canvas ref={canvasRef} width="640" height="480" />
+            <canvas ref={canvasRef} width="320" height="240" />
         </div>
     );
 };
