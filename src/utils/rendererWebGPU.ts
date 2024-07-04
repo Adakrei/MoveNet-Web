@@ -83,7 +83,7 @@ export class RendererWebGPU {
             ) -> VertexOutput {
                 var<function> vertexOutput: VertexOutput;
                 let rawY = (keypoints[VertexIndex].x + uniforms.offsetY) * uniforms.scaleY / uniforms.height;
-                let rawX  = (keypoints[VertexIndex].y + uniforms.offsetX) * uniforms.scaleX / uniforms.width;
+                let rawX = (keypoints[VertexIndex].y + uniforms.offsetX) * uniforms.scaleX / uniforms.width;
                 // Flip horizontally.
                 var x = 1.0 - rawX * 2.0;
                 var y = 1.0 - rawY * 2.0;
